@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -16,14 +17,14 @@ import java.util.Date;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer productId;
+    private Long productId;
     private String productName;
     private String productDescription;
     private BigDecimal productPrice;
     private Integer productStock;
     private String productImageUrl;
-    private Date productCreatedAt;
-    private Date productUpdatedAt;
+    private LocalDateTime productCreatedAt;
+    private LocalDateTime productUpdatedAt;
 
     @Override
     public String toString() {

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 @CrossOrigin
 public class ProductController {
 
@@ -38,7 +39,7 @@ public class ProductController {
     }
 
     @PutMapping("/product/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable int id,@RequestBody Product product){
+    public ResponseEntity<Product> updateProduct(@PathVariable Long id,@RequestBody Product product){
         Product updatedProduct = productService.addOrUpdateProduct(product);
         System.out.println("controller "+ updatedProduct);
         if(updatedProduct!=null){
@@ -50,7 +51,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/product/{id}")
-    public  ResponseEntity<String> deleteProduct(@PathVariable int id){
+    public  ResponseEntity<String> deleteProduct(@PathVariable Long id){
         productService.deleteProduct(id);
         return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
     }
