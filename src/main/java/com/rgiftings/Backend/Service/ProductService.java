@@ -3,12 +3,15 @@ package com.rgiftings.Backend.Service;
 import com.rgiftings.Backend.DTO.Product.ProductRequest;
 import com.rgiftings.Backend.DTO.Product.ProductResponse;
 import com.rgiftings.Backend.Model.Product;
+import com.rgiftings.Backend.Model.ProductAttribute;
+import com.rgiftings.Backend.Repository.DEV.AttributeRepository;
 import com.rgiftings.Backend.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProductService {
