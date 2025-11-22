@@ -1,4 +1,4 @@
-package com.rgiftings.Backend.DTO;
+package com.rgiftings.Backend.DTO.Order;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

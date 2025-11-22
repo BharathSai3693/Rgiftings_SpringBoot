@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
+@CrossOrigin("*")
 public class ProductController {
 
     @Autowired
@@ -27,6 +27,7 @@ public class ProductController {
 
     @PostMapping("/product")
     public ResponseEntity<Product> AddProduct(@RequestBody Product product){
+        System.out.println("Product Create Request Came");
         Product createdProduct = productService.addOrUpdateProduct(product);
         System.out.println("controller "+ createdProduct);
         if(createdProduct!=null){

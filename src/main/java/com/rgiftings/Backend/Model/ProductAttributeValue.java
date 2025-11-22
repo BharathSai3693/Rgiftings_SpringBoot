@@ -1,0 +1,27 @@
+package com.rgiftings.Backend.Model;
+
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProductAttributeValue {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private ProductAttribute productAttribute;
+
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private AtrributeValue atrributeValue;
+
+    private Double extraPrice = 0.0;
+}

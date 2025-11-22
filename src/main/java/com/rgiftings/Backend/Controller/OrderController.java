@@ -1,7 +1,7 @@
 package com.rgiftings.Backend.Controller;
 
-import com.rgiftings.Backend.DTO.OrderRequest;
-import com.rgiftings.Backend.DTO.OrderResponse;
+import com.rgiftings.Backend.DTO.Order.OrderRequest;
+import com.rgiftings.Backend.DTO.Order.OrderResponse;
 import com.rgiftings.Backend.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin
+@CrossOrigin("*")
 public class OrderController {
 
     @Autowired

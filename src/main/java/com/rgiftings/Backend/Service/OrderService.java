@@ -1,9 +1,9 @@
 package com.rgiftings.Backend.Service;
 
-import com.rgiftings.Backend.DTO.OrderItemRequest;
-import com.rgiftings.Backend.DTO.OrderItemResponse;
-import com.rgiftings.Backend.DTO.OrderRequest;
-import com.rgiftings.Backend.DTO.OrderResponse;
+import com.rgiftings.Backend.DTO.Order.OrderItemRequest;
+import com.rgiftings.Backend.DTO.Order.OrderItemResponse;
+import com.rgiftings.Backend.DTO.Order.OrderRequest;
+import com.rgiftings.Backend.DTO.Order.OrderResponse;
 import com.rgiftings.Backend.Model.Order;
 import com.rgiftings.Backend.Model.OrderItem;
 import com.rgiftings.Backend.Model.Product;
@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class OrderService {
@@ -41,7 +40,7 @@ public class OrderService {
         List<OrderItem> orderItems = new ArrayList<>();
         for(OrderItemRequest orderItemRequest : orderRequest.items()){
             Product product = productRepository.findById(orderItemRequest.productId()).orElseThrow(() -> new RuntimeException("Product Not Found"));
-            product.setProductStock(product.getProductStock() - orderItemRequest.quantity());
+            product.setStock(product.getStock() - orderItemRequest.quantity());
             productRepository.save(product);
 
             OrderItem orderItem = OrderItem.builder()
@@ -63,7 +62,7 @@ public class OrderService {
         List<OrderItemResponse> orderItemResponses = new ArrayList<>();
         for(OrderItem orderItem : savedOrder.getOrderItems()){
                 OrderItemResponse orderItemResponse = new OrderItemResponse(
-                        orderItem.getProduct().getProductName(),
+                        orderItem.getProduct().getName(),
                         orderItem.getQuantity(),
                         orderItem.getLineTotalPrice()
                 );

@@ -7,7 +7,9 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
 
 @Entity
 @Data
@@ -17,26 +19,32 @@ import java.util.Date;
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
-    private String productName;
-    private String productDescription;
-    private BigDecimal productPrice;
-    private Integer productStock;
-    private String productImageUrl;
-    private LocalDateTime productCreatedAt;
-    private LocalDateTime productUpdatedAt;
+    private Long id;
+    private String name;
+    private String description;
+
+    @Column(nullable = false)
+    private BigDecimal basePrice;
+    private Integer stock;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    private String category;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductAttribute> attributes = new HashSet<>();
 
     @Override
     public String toString() {
         return "Product{" +
-                "product_id=" + productId +
-                ", productName='" + productName + '\'' +
-                ", productDescription='" + productDescription + '\'' +
-                ", productPrice=" + productPrice +
-                ", productStock=" + productStock +
-                ", productImageUrl='" + productImageUrl + '\'' +
-                ", productCreatedAt=" + productCreatedAt +
-                ", productUpdatedAt=" + productUpdatedAt +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", basePrice=" + basePrice +
+                ", stock=" + stock +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }
