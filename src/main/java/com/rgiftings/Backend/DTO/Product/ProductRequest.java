@@ -11,6 +11,7 @@ public record ProductRequest(
         BigDecimal basePrice,
         Integer stock,
         String category,
+        List<ProductAttributeRequest> attributes
 
 ) {
 }
