@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 public record ProductResponse(
         Long id,
         String name,
@@ -12,6 +11,7 @@ public record ProductResponse(
         BigDecimal basePrice,
         Integer stock,
         String category,
+        String imageUrl,
         List<ProductAttributeResponse> attributes,
         LocalDateTime createdAt,
         LocalDateTime updatedAt

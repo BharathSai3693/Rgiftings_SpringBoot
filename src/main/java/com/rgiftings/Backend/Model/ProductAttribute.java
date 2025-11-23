@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -25,6 +27,9 @@ public class ProductAttribute {
 
     @Column(nullable = false)
     private String label;
+
+    @OneToMany(mappedBy = "productAttribute", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<ProductAttributeValue> values = new HashSet<>();
 
 //    private Boolean required = false;
 

@@ -2,14 +2,17 @@ package com.rgiftings.Backend.Service;
 
 import com.rgiftings.Backend.DTO.Product.ProductAttributeRequest;
 import com.rgiftings.Backend.DTO.Product.ProductAttributeResponse;
+import com.rgiftings.Backend.DTO.Product.ProductAttributeValueRequest;
+import com.rgiftings.Backend.DTO.Product.ProductAttributeValueResponse;
 import com.rgiftings.Backend.DTO.Product.ProductRequest;
 import com.rgiftings.Backend.DTO.Product.ProductResponse;
 import com.rgiftings.Backend.Model.AttributeType;
-import com.rgiftings.Backend.DTO.Product.ProductRequest;
-import com.rgiftings.Backend.DTO.Product.ProductResponse;
+import com.rgiftings.Backend.Model.AtrributeValue;
 import com.rgiftings.Backend.Model.Product;
 import com.rgiftings.Backend.Model.ProductAttribute;
+import com.rgiftings.Backend.Model.ProductAttributeValue;
 import com.rgiftings.Backend.Repository.DEV.AttributeRepository;
+import com.rgiftings.Backend.Repository.DEV.AttributeValueRepository;
 import com.rgiftings.Backend.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,9 @@ public class ProductService {
 
     @Autowired
     private AttributeRepository attributeRepository;
+
+    @Autowired
+    private AttributeValueRepository attributeValueRepository;
 
     public ProductResponse createProduct(ProductRequest request) {
         Product product = mapRequestToEntity(request);
@@ -74,6 +80,7 @@ public class ProductService {
         product.setBasePrice(request.basePrice());
         product.setStock(request.stock());
         product.setCategory(request.category());
+        product.setImageUrl(request.imageUrl());
         if (product.getAttributes() == null) {
             product.setAttributes(new HashSet<>());
         }
@@ -88,6 +95,7 @@ public class ProductService {
                 product.getBasePrice(),
                 product.getStock(),
                 product.getCategory(),
+                product.getImageUrl(),
                 mapAttributesToResponse(product.getAttributes()),
                 product.getCreatedAt(),
                 product.getUpdatedAt()
@@ -95,16 +103,16 @@ public class ProductService {
     }
 
     private void syncProductAttributes(Product product, List<ProductAttributeRequest> attributes) {
-        if (attributes == null) {
-            return;
-        }
-
         Set<ProductAttribute> productAttributes = product.getAttributes();
         if (productAttributes == null) {
             productAttributes = new HashSet<>();
             product.setAttributes(productAttributes);
         } else {
             productAttributes.clear();
+        }
+
+        if (attributes == null) {
+            return;
         }
 
         for (ProductAttributeRequest attribute : attributes) {
@@ -118,7 +126,52 @@ public class ProductService {
             productAttribute.setAttributeType(attributeType);
             productAttribute.setLabel(attribute.label());
 
+            syncProductAttributeValues(productAttribute, attribute.values());
+
             productAttributes.add(productAttribute);
+        }
+    }
+
+    private void syncProductAttributeValues(ProductAttribute productAttribute, List<ProductAttributeValueRequest> values) {
+        Set<ProductAttributeValue> valueEntities = productAttribute.getValues();
+        if (valueEntities == null) {
+            valueEntities = new HashSet<>();
+            productAttribute.setValues(valueEntities);
+        } else {
+            valueEntities.clear();
+        }
+
+        if (values == null) {
+            return;
+        }
+
+        for (ProductAttributeValueRequest valueRequest : values) {
+            AtrributeValue baseValue;
+            if (valueRequest.attributeValueId() != null) {
+                baseValue = attributeValueRepository.findById(valueRequest.attributeValueId())
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "Attribute value not found with id: " + valueRequest.attributeValueId()
+                        ));
+                if (!baseValue.getAttributeType().getId().equals(productAttribute.getAttributeType().getId())) {
+                    throw new IllegalArgumentException("Attribute value does not belong to attribute type id: " + productAttribute.getAttributeType().getId());
+                }
+            } else {
+                if (valueRequest.value() == null || valueRequest.value().isBlank()) {
+                    throw new IllegalArgumentException("Attribute value text is required when attributeValueId is not provided");
+                }
+                baseValue = new AtrributeValue();
+                baseValue.setAttributeType(productAttribute.getAttributeType());
+                baseValue.setValue(valueRequest.value());
+                baseValue.setDisplayCode(valueRequest.displayCode());
+                baseValue = attributeValueRepository.save(baseValue);
+            }
+
+            ProductAttributeValue productAttributeValue = new ProductAttributeValue();
+            productAttributeValue.setProductAttribute(productAttribute);
+            productAttributeValue.setAtrributeValue(baseValue);
+            productAttributeValue.setExtraPrice(valueRequest.extraPrice() != null ? valueRequest.extraPrice() : 0.0);
+
+            valueEntities.add(productAttributeValue);
         }
     }
 
@@ -132,7 +185,24 @@ public class ProductService {
                         attribute.getId(),
                         attribute.getLabel(),
                         attribute.getAttributeType().getId(),
-                        attribute.getAttributeType().getName()
+                        attribute.getAttributeType().getName(),
+                        mapAttributeValuesToResponse(attribute.getValues())
+                ))
+                .toList();
+    }
+
+    private List<ProductAttributeValueResponse> mapAttributeValuesToResponse(Set<ProductAttributeValue> values) {
+        if (values == null) {
+            return List.of();
+        }
+
+        return values.stream()
+                .map(value -> new ProductAttributeValueResponse(
+                        value.getId(),
+                        value.getAtrributeValue().getId(),
+                        value.getAtrributeValue().getValue(),
+                        value.getAtrributeValue().getDisplayCode(),
+                        value.getExtraPrice()
                 ))
                 .toList();
     }
