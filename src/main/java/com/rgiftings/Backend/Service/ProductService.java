@@ -5,6 +5,8 @@ import com.rgiftings.Backend.DTO.Product.ProductAttributeResponse;
 import com.rgiftings.Backend.DTO.Product.ProductRequest;
 import com.rgiftings.Backend.DTO.Product.ProductResponse;
 import com.rgiftings.Backend.Model.AttributeType;
+import com.rgiftings.Backend.DTO.Product.ProductRequest;
+import com.rgiftings.Backend.DTO.Product.ProductResponse;
 import com.rgiftings.Backend.Model.Product;
 import com.rgiftings.Backend.Model.ProductAttribute;
 import com.rgiftings.Backend.Repository.DEV.AttributeRepository;
