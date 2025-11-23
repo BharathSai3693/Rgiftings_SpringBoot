@@ -12,12 +12,12 @@ import com.rgiftings.Backend.Model.Product;
 import com.rgiftings.Backend.Model.ProductAttribute;
 import com.rgiftings.Backend.Model.ProductAttributeValue;
 import com.rgiftings.Backend.Repository.DEV.AttributeRepository;
-import com.rgiftings.Backend.Repository.DEV.AttributeValueRepository;
 import com.rgiftings.Backend.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -32,9 +32,6 @@ public class ProductService {
 
     @Autowired
     private AttributeRepository attributeRepository;
-
-    @Autowired
-    private AttributeValueRepository attributeValueRepository;
 
     public ProductResponse createProduct(ProductRequest request) {
         Product product = mapRequestToEntity(request);
@@ -148,13 +145,7 @@ public class ProductService {
         for (ProductAttributeValueRequest valueRequest : values) {
             AtrributeValue baseValue;
             if (valueRequest.attributeValueId() != null) {
-                baseValue = attributeValueRepository.findById(valueRequest.attributeValueId())
-                        .orElseThrow(() -> new IllegalArgumentException(
-                                "Attribute value not found with id: " + valueRequest.attributeValueId()
-                        ));
-                if (!baseValue.getAttributeType().getId().equals(productAttribute.getAttributeType().getId())) {
-                    throw new IllegalArgumentException("Attribute value does not belong to attribute type id: " + productAttribute.getAttributeType().getId());
-                }
+                baseValue = findAttributeValue(productAttribute.getAttributeType(), valueRequest.attributeValueId());
             } else {
                 if (valueRequest.value() == null || valueRequest.value().isBlank()) {
                     throw new IllegalArgumentException("Attribute value text is required when attributeValueId is not provided");
@@ -163,7 +154,7 @@ public class ProductService {
                 baseValue.setAttributeType(productAttribute.getAttributeType());
                 baseValue.setValue(valueRequest.value());
                 baseValue.setDisplayCode(valueRequest.displayCode());
-                baseValue = attributeValueRepository.save(baseValue);
+                attachAndPersistNewValue(productAttribute.getAttributeType(), baseValue);
             }
 
             ProductAttributeValue productAttributeValue = new ProductAttributeValue();
@@ -173,6 +164,28 @@ public class ProductService {
 
             valueEntities.add(productAttributeValue);
         }
+    }
+
+    private AtrributeValue findAttributeValue(AttributeType attributeType, Long attributeValueId) {
+        if (attributeType.getValues() == null) {
+            throw new IllegalArgumentException("Attribute value not found with id: " + attributeValueId);
+        }
+
+        return attributeType.getValues()
+                .stream()
+                .filter(value -> attributeValueId.equals(value.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Attribute value not found with id: " + attributeValueId));
+    }
+
+    private void attachAndPersistNewValue(AttributeType attributeType, AtrributeValue baseValue) {
+        List<AtrributeValue> values = attributeType.getValues();
+        if (values == null) {
+            values = new ArrayList<>();
+            attributeType.setValues(values);
+        }
+        values.add(baseValue);
+        attributeRepository.save(attributeType);
     }
 
     private List<ProductAttributeResponse> mapAttributesToResponse(Set<ProductAttribute> attributes) {
