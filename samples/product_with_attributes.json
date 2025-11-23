@@ -1,0 +1,42 @@
+{
+  "name": "Premium T-Shirt",
+  "description": "Soft cotton tee with standard sizes and materials",
+  "basePrice": 19.99,
+  "stock": 250,
+  "category": "Apparel",
+  "imageUrl": "https://example.com/images/premium-tee.png",
+  "attributes": [
+    {
+      "attributeTypeId": 1,
+      "label": "Color",
+      "values": [
+        { "attributeValueId": 1 },
+        { "attributeValueId": 2 },
+        { "attributeValueId": 3, "extraPrice": 1.00 }
+      ]
+    },
+    {
+      "attributeTypeId": 2,
+      "label": "Size",
+      "values": [
+        { "attributeValueId": 4 },
+        { "attributeValueId": 5 },
+        { "attributeValueId": 6 },
+        { "attributeValueId": 7, "extraPrice": 2.50 },
+        { "attributeValueId": 8, "extraPrice": 3.00 }
+      ]
+    },
+    {
+      "attributeTypeId": 3,
+      "label": "Material",
+      "values": [
+        { "attributeValueId": 9 },
+        { "attributeValueId": 10 },
+        { "attributeValueId": 11, "extraPrice": 4.00 },
+        { "attributeValueId": 12 },
+        { "attributeValueId": 13, "extraPrice": 1.50 },
+        { "attributeValueId": 14 }
+      ]
+    }
+  ]
+}
