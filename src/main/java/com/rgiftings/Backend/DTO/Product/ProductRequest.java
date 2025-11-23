@@ -2,6 +2,7 @@ package com.rgiftings.Backend.DTO.Product;
 
 import java.math.BigDecimal;
 
+
 import java.util.List;
 
 public record ProductRequest(
@@ -11,5 +12,6 @@ public record ProductRequest(
         Integer stock,
         String category,
         List<ProductAttributeRequest> attributes
+
 ) {
 }
