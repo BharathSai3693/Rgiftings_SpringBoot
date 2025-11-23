@@ -23,5 +23,12 @@ public class AtrributeValue {
 
     private String displayCode;
 
-
+    @Override
+    public String toString() {
+        return "AtrributeValue{" +
+                "id=" + id +
+                ", value='" + value + '\'' +
+                ", displayCode='" + displayCode + '\'' +
+                '}';
+    }
 }

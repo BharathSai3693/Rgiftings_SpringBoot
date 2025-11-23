@@ -1,14 +1,13 @@
 package com.rgiftings.Backend.Model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class AttributeType {
@@ -25,4 +24,13 @@ public class AttributeType {
     @OneToMany(mappedBy = "attributeType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AtrributeValue> values;
 
+    @Override
+    public String toString() {
+        return "AttributeType{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", values=" + values +
+                '}';
+    }
 }
