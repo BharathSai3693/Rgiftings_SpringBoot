@@ -1,4 +1,10 @@
 package com.rgiftings.Backend.DTO.Attribute;
 
-public record AttributeTypeRequest() {
+import java.util.List;
+
+public record AttributeTypeRequest(
+        String type,
+        String description,
+        List<AttributeValueRequest> attributeValueRequests
+) {
 }

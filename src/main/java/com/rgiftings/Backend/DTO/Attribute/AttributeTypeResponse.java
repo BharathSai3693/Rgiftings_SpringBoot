@@ -1,4 +1,11 @@
 package com.rgiftings.Backend.DTO.Attribute;
 
-public record AttributeTypeResponse() {
+import java.util.List;
+
+public record AttributeTypeResponse(
+    Long typeId,
+    String type,
+    String description,
+    List<AttributeValueResponse> attributeValues
+) {
 }

@@ -20,7 +20,7 @@ public class ProductAttributeValue {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private AtrributeValue atrributeValue;
+    private AttributeValue AttributeValue;
 
     private Double extraPrice = 0.0;
 }

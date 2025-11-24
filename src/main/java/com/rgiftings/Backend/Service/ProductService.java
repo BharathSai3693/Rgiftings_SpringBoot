@@ -7,7 +7,7 @@ import com.rgiftings.Backend.DTO.Product.ProductAttributeValueResponse;
 import com.rgiftings.Backend.DTO.Product.ProductRequest;
 import com.rgiftings.Backend.DTO.Product.ProductResponse;
 import com.rgiftings.Backend.Model.AttributeType;
-import com.rgiftings.Backend.Model.AtrributeValue;
+import com.rgiftings.Backend.Model.AttributeValue;
 import com.rgiftings.Backend.Model.Product;
 import com.rgiftings.Backend.Model.ProductAttribute;
 import com.rgiftings.Backend.Model.ProductAttributeValue;
@@ -143,14 +143,14 @@ public class ProductService {
         }
 
         for (ProductAttributeValueRequest valueRequest : values) {
-            AtrributeValue baseValue;
+            AttributeValue baseValue;
             if (valueRequest.attributeValueId() != null) {
                 baseValue = findAttributeValue(productAttribute.getAttributeType(), valueRequest.attributeValueId());
             } else {
                 if (valueRequest.value() == null || valueRequest.value().isBlank()) {
                     throw new IllegalArgumentException("Attribute value text is required when attributeValueId is not provided");
                 }
-                baseValue = new AtrributeValue();
+                baseValue = new AttributeValue();
                 baseValue.setAttributeType(productAttribute.getAttributeType());
                 baseValue.setValue(valueRequest.value());
                 baseValue.setDisplayCode(valueRequest.displayCode());
@@ -159,14 +159,14 @@ public class ProductService {
 
             ProductAttributeValue productAttributeValue = new ProductAttributeValue();
             productAttributeValue.setProductAttribute(productAttribute);
-            productAttributeValue.setAtrributeValue(baseValue);
+            productAttributeValue.setAttributeValue(baseValue);
             productAttributeValue.setExtraPrice(valueRequest.extraPrice() != null ? valueRequest.extraPrice() : 0.0);
 
             valueEntities.add(productAttributeValue);
         }
     }
 
-    private AtrributeValue findAttributeValue(AttributeType attributeType, Long attributeValueId) {
+    private AttributeValue findAttributeValue(AttributeType attributeType, Long attributeValueId) {
         if (attributeType.getValues() == null) {
             throw new IllegalArgumentException("Attribute value not found with id: " + attributeValueId);
         }
@@ -178,8 +178,8 @@ public class ProductService {
                 .orElseThrow(() -> new IllegalArgumentException("Attribute value not found with id: " + attributeValueId));
     }
 
-    private void attachAndPersistNewValue(AttributeType attributeType, AtrributeValue baseValue) {
-        List<AtrributeValue> values = attributeType.getValues();
+    private void attachAndPersistNewValue(AttributeType attributeType, AttributeValue baseValue) {
+        List<AttributeValue> values = attributeType.getValues();
         if (values == null) {
             values = new ArrayList<>();
             attributeType.setValues(values);
@@ -198,7 +198,7 @@ public class ProductService {
                         attribute.getId(),
                         attribute.getLabel(),
                         attribute.getAttributeType().getId(),
-                        attribute.getAttributeType().getName(),
+                        attribute.getAttributeType().getType(),
                         mapAttributeValuesToResponse(attribute.getValues())
                 ))
                 .toList();
@@ -212,9 +212,9 @@ public class ProductService {
         return values.stream()
                 .map(value -> new ProductAttributeValueResponse(
                         value.getId(),
-                        value.getAtrributeValue().getId(),
-                        value.getAtrributeValue().getValue(),
-                        value.getAtrributeValue().getDisplayCode(),
+                        value.getAttributeValue().getId(),
+                        value.getAttributeValue().getValue(),
+                        value.getAttributeValue().getDisplayCode(),
                         value.getExtraPrice()
                 ))
                 .toList();

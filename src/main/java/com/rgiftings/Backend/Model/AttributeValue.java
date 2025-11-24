@@ -1,15 +1,15 @@
 package com.rgiftings.Backend.Model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
+
+@Getter
+@Setter
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class AtrributeValue {
+public class AttributeValue {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,7 +25,7 @@ public class AtrributeValue {
 
     @Override
     public String toString() {
-        return "AtrributeValue{" +
+        return "AttributeValue{" +
                 "id=" + id +
                 ", value='" + value + '\'' +
                 ", displayCode='" + displayCode + '\'' +

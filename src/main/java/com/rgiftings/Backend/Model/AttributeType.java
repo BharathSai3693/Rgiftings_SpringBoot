@@ -17,18 +17,18 @@ public class AttributeType {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String name;
+    private String type;
 
     private String description;
 
-    @OneToMany(mappedBy = "attributeType", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AtrributeValue> values;
+    @OneToMany(mappedBy = "attributeType", cascade = CascadeType.ALL)
+    private List<AttributeValue> values;
 
     @Override
     public String toString() {
         return "AttributeType{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
                 ", description='" + description + '\'' +
                 ", values=" + values +
                 '}';

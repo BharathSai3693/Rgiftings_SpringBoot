@@ -1,4 +1,8 @@
 package com.rgiftings.Backend.DTO.Attribute;
 
-public record AttributeValueResponse() {
+public record AttributeValueResponse(
+        Long valueId,
+        String displayCode,
+        String value
+) {
 }

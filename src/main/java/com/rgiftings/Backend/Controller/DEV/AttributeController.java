@@ -1,8 +1,12 @@
 package com.rgiftings.Backend.Controller.DEV;
 
+import com.rgiftings.Backend.DTO.Attribute.AttributeTypeRequest;
+import com.rgiftings.Backend.DTO.Attribute.AttributeTypeResponse;
 import com.rgiftings.Backend.Model.AttributeType;
 import com.rgiftings.Backend.Repository.DEV.AttributeRepository;
+import com.rgiftings.Backend.Service.AttributeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,60 +20,35 @@ public class AttributeController {
     @Autowired
     private AttributeRepository attributeRepository;
 
+    @Autowired
+    private AttributeService attributeService;
 
-    @PostMapping("/attribute")
-    public String createAttribute(@RequestBody AttributeType attributeType){
-        // Set parent reference for all child values
-        if (attributeType.getValues() != null) {
-            attributeType.getValues().forEach(v -> v.setAttributeType(attributeType));
-        }
-        attributeRepository.save(attributeType);
-        return "Created Attribute";
-    }
 
     @GetMapping("/attribute")
-    public List<AttributeType> getAttributes() {
-        System.out.println("vachindhiii");
-        attributeRepository.findAll().stream().forEach(attributeType -> {
-            System.out.println(attributeType);
-        });
-        System.out.println("retunrded");
-        return attributeRepository.findAll();
+    public ResponseEntity<List<AttributeTypeResponse>> getAllAttributes() {
+        List<AttributeTypeResponse> attributes = attributeService.getAllAttributes();
+        return new ResponseEntity<>(attributes, HttpStatus.OK);
     }
 
-    @GetMapping("/attribute/{id}")
-    public ResponseEntity<AttributeType> getAttribute(@PathVariable Long id) {
-        return attributeRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+
+    @PostMapping("/attribute")
+    public String createAttribute(@RequestBody AttributeTypeRequest attributeTypeRequest){
+        attributeService.createAttribute(attributeTypeRequest);
+        return "created";
     }
+
+
 
     @PutMapping("/attribute/{id}")
     public ResponseEntity<String> updateAttribute(@PathVariable Long id, @RequestBody AttributeType attributeType) {
-        return attributeRepository.findById(id)
-                .map(existing -> {
-                    existing.setName(attributeType.getName());
-                    existing.setDescription(attributeType.getDescription());
-
-                    if (attributeType.getValues() != null) {
-                        attributeType.getValues().forEach(value -> value.setAttributeType(existing));
-                    }
-
-                    existing.setValues(attributeType.getValues());
-                    attributeRepository.save(existing);
-                    return ResponseEntity.ok("Updated Attribute");
-                })
-                .orElse(ResponseEntity.notFound().build());
+        String result = attributeService.updateAttibute(id, attributeType);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     @DeleteMapping("/attribute/{id}")
-    public ResponseEntity<Void> deleteAttribute(@PathVariable Long id) {
-        if (!attributeRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        attributeRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deleteAttribute(@PathVariable Long id) {
+        ResponseEntity<String> result = attributeService.deleteAttribute(id);
+        return result;
     }
 
 
