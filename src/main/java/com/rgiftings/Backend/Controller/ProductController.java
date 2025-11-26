@@ -1,7 +1,8 @@
 package com.rgiftings.Backend.Controller;
 
-import com.rgiftings.Backend.DTO.Product.ProductRequest;
-import com.rgiftings.Backend.DTO.Product.ProductResponse;
+import com.rgiftings.Backend.DTO.Product.Create.ProductRequest;
+import com.rgiftings.Backend.DTO.Product.Retrieve.ProductResponse;
+import com.rgiftings.Backend.DTO.Product.Update.UpdateProductRequest;
 import com.rgiftings.Backend.Service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,30 +27,29 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-    @PostMapping("/product")
-    public ResponseEntity<ProductResponse> addProduct(@RequestBody ProductRequest product){
-        System.out.println("Product Create Request Came");
-        ProductResponse createdProduct = productService.createProduct(product);
-        System.out.println("controller "+ createdProduct);
-        if(createdProduct!=null){
-            return new ResponseEntity<>(createdProduct, HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
+    @PostMapping("/product")
+    public String createProduct(@RequestBody ProductRequest productRequest){
+        return productService.createProduct(productRequest);
     }
 
+//    @PutMapping("/product/{id}")
+//    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,@RequestBody ProductRequest product){
+//        ProductResponse updatedProduct = productService.updateProduct(id, product);
+//        if(updatedProduct!=null){
+//            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
+//        }
+//        else {
+//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
     @PutMapping("/product/{id}")
-    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,@RequestBody ProductRequest product){
-        ProductResponse updatedProduct = productService.updateProduct(id, product);
-        System.out.println("controller "+ updatedProduct);
-        if(updatedProduct!=null){
-            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+    public String updateproduct(@PathVariable Long id, @RequestBody UpdateProductRequest updateProductRequest){
+        System.out.println("UPDATE PRODUCT CALLED");
+        System.out.println(updateProductRequest);
+        String result = productService.updateProduct(id, updateProductRequest);
+        return result;
     }
 
     @DeleteMapping("/product/{id}")

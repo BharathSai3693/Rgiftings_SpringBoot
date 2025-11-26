@@ -1,4 +1,4 @@
-package com.rgiftings.Backend.DTO.Product;
+package com.rgiftings.Backend.DTO.Product.Create;
 
 import java.util.List;
 

@@ -1,12 +1,11 @@
-package com.rgiftings.Backend.DTO.Product;
+package com.rgiftings.Backend.DTO.Product.Retrieve;
 
 import java.util.List;
 
 public record ProductAttributeResponse(
         Long id,
+        Long attributeId,
         String label,
-        Long attributeTypeId,
-        String attributeTypeName,
         List<ProductAttributeValueResponse> values
 ) {
 }

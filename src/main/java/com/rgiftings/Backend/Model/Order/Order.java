@@ -1,4 +1,4 @@
-package com.rgiftings.Backend.Model;
+package com.rgiftings.Backend.Model.Order;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

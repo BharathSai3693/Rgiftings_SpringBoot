@@ -1,5 +1,6 @@
-package com.rgiftings.Backend.Model;
+package com.rgiftings.Backend.Model.Order;
 
+import com.rgiftings.Backend.Model.Product.Product;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

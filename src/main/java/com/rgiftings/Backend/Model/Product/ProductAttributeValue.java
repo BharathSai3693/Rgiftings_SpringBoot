@@ -1,5 +1,7 @@
-package com.rgiftings.Backend.Model;
+package com.rgiftings.Backend.Model.Product;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rgiftings.Backend.Model.Attribute.AttributeValue;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +18,7 @@ public class ProductAttributeValue {
 
     @ManyToOne
     @JoinColumn(nullable = false)
+    @JsonIgnore
     private ProductAttribute productAttribute;
 
     @ManyToOne

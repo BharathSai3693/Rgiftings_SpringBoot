@@ -1,10 +1,14 @@
-package com.rgiftings.Backend.Model;
+package com.rgiftings.Backend.Model.Product;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.rgiftings.Backend.Model.Attribute.AttributeType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -19,6 +23,7 @@ public class ProductAttribute {
 
     @ManyToOne
     @JoinColumn(nullable = false)
+    @JsonIgnore
     private Product product;
 
     @ManyToOne
@@ -29,7 +34,7 @@ public class ProductAttribute {
     private String label;
 
     @OneToMany(mappedBy = "productAttribute", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductAttributeValue> values = new HashSet<>();
+    private List<ProductAttributeValue> values = new ArrayList<>();
 
 //    private Boolean required = false;
 

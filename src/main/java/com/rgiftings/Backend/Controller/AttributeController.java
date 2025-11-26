@@ -1,9 +1,10 @@
-package com.rgiftings.Backend.Controller.DEV;
+package com.rgiftings.Backend.Controller;
 
-import com.rgiftings.Backend.DTO.Attribute.AttributeTypeRequest;
-import com.rgiftings.Backend.DTO.Attribute.AttributeTypeResponse;
-import com.rgiftings.Backend.Model.AttributeType;
-import com.rgiftings.Backend.Repository.DEV.AttributeRepository;
+import com.rgiftings.Backend.DTO.Attribute.Create.AttributeTypeRequest;
+import com.rgiftings.Backend.DTO.Attribute.Retrieve.AttributeTypeResponse;
+import com.rgiftings.Backend.DTO.Attribute.Update.UpdateAttributeRequest;
+import com.rgiftings.Backend.Model.Attribute.AttributeType;
+import com.rgiftings.Backend.Repository.AttributeRepository;
 import com.rgiftings.Backend.Service.AttributeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,25 +24,30 @@ public class AttributeController {
     @Autowired
     private AttributeService attributeService;
 
-
     @GetMapping("/attribute")
     public ResponseEntity<List<AttributeTypeResponse>> getAllAttributes() {
         List<AttributeTypeResponse> attributes = attributeService.getAllAttributes();
         return new ResponseEntity<>(attributes, HttpStatus.OK);
     }
 
+    @GetMapping("/attribute/{id}")
+    public ResponseEntity<AttributeTypeResponse> getAttributeById(@PathVariable Long id){
+
+        AttributeTypeResponse attributeTypeResponse = attributeService.getAttributeById(id);
+        return new ResponseEntity<>(attributeTypeResponse,HttpStatus.OK);
+    }
 
     @PostMapping("/attribute")
     public String createAttribute(@RequestBody AttributeTypeRequest attributeTypeRequest){
+
         attributeService.createAttribute(attributeTypeRequest);
         return "created";
     }
 
-
-
     @PutMapping("/attribute/{id}")
-    public ResponseEntity<String> updateAttribute(@PathVariable Long id, @RequestBody AttributeType attributeType) {
-        String result = attributeService.updateAttibute(id, attributeType);
+    public ResponseEntity<String> updateAttribute(@PathVariable Long id, @RequestBody UpdateAttributeRequest updateAttributeRequest) {
+
+        String result = attributeService.updateAttribute(id, updateAttributeRequest);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -50,7 +56,5 @@ public class AttributeController {
         ResponseEntity<String> result = attributeService.deleteAttribute(id);
         return result;
     }
-
-
 
 }

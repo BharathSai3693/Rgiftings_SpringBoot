@@ -1,8 +1,8 @@
-package com.rgiftings.Backend.DTO.Product;
+package com.rgiftings.Backend.DTO.Product.Retrieve;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 public record ProductResponse(
         Long id,
@@ -12,7 +12,7 @@ public record ProductResponse(
         Integer stock,
         String category,
         String imageUrl,
-        List<ProductAttributeResponse> attributes,
+        Set<ProductAttributeResponse> attributes,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

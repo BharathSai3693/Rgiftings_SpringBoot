@@ -1,4 +1,4 @@
-package com.rgiftings.Backend.DTO.Attribute;
+package com.rgiftings.Backend.DTO.Attribute.Create;
 
 public record AttributeValueRequest(
         String value,

@@ -1,4 +1,4 @@
-package com.rgiftings.Backend.DTO.Attribute;
+package com.rgiftings.Backend.DTO.Attribute.Retrieve;
 
 public record AttributeValueResponse(
         Long valueId,

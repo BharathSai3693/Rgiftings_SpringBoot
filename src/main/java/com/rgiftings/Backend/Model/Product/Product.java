@@ -1,11 +1,14 @@
-package com.rgiftings.Backend.Model;
+package com.rgiftings.Backend.Model.Product;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -26,7 +29,10 @@ public class Product {
     private BigDecimal basePrice;
     private Integer stock;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
     private String category;
@@ -34,7 +40,7 @@ public class Product {
     private String imageUrl;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ProductAttribute> attributes = new HashSet<>();
+    private List<ProductAttribute> attributes = new ArrayList<>();
 
     @Override
     public String toString() {

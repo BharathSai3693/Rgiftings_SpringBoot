@@ -1,6 +1,6 @@
 package com.rgiftings.Backend.Repository;
 
-import com.rgiftings.Backend.Model.Order;
+import com.rgiftings.Backend.Model.Order.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

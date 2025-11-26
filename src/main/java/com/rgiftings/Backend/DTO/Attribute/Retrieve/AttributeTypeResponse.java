@@ -1,4 +1,4 @@
-package com.rgiftings.Backend.DTO.Attribute;
+package com.rgiftings.Backend.DTO.Attribute.Retrieve;
 
 import java.util.List;
 

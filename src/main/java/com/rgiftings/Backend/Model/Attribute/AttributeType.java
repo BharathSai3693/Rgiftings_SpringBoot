@@ -1,4 +1,4 @@
-package com.rgiftings.Backend.Model;
+package com.rgiftings.Backend.Model.Attribute;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,7 +21,7 @@ public class AttributeType {
 
     private String description;
 
-    @OneToMany(mappedBy = "attributeType", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "attributeType", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AttributeValue> values;
 
     @Override

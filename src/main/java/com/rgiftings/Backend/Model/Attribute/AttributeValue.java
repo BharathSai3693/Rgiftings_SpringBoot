@@ -1,5 +1,6 @@
-package com.rgiftings.Backend.Model;
+package com.rgiftings.Backend.Model.Attribute;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,6 +17,7 @@ public class AttributeValue {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     private AttributeType attributeType;
 
     @Column(nullable = false)

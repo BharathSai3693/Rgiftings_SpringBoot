@@ -1,17 +1,22 @@
 package com.rgiftings.Backend.Service;
 
-import com.rgiftings.Backend.DTO.Product.ProductAttributeRequest;
-import com.rgiftings.Backend.DTO.Product.ProductAttributeResponse;
-import com.rgiftings.Backend.DTO.Product.ProductAttributeValueRequest;
-import com.rgiftings.Backend.DTO.Product.ProductAttributeValueResponse;
-import com.rgiftings.Backend.DTO.Product.ProductRequest;
-import com.rgiftings.Backend.DTO.Product.ProductResponse;
-import com.rgiftings.Backend.Model.AttributeType;
-import com.rgiftings.Backend.Model.AttributeValue;
-import com.rgiftings.Backend.Model.Product;
-import com.rgiftings.Backend.Model.ProductAttribute;
-import com.rgiftings.Backend.Model.ProductAttributeValue;
-import com.rgiftings.Backend.Repository.DEV.AttributeRepository;
+import com.rgiftings.Backend.DTO.Attribute.Update.UpdateAttributeValueRequest;
+import com.rgiftings.Backend.DTO.Product.Create.ProductAttributeRequest;
+import com.rgiftings.Backend.DTO.Product.Retrieve.ProductAttributeResponse;
+import com.rgiftings.Backend.DTO.Product.Create.ProductAttributeValueRequest;
+import com.rgiftings.Backend.DTO.Product.Retrieve.ProductAttributeValueResponse;
+import com.rgiftings.Backend.DTO.Product.Create.ProductRequest;
+import com.rgiftings.Backend.DTO.Product.Retrieve.ProductResponse;
+import com.rgiftings.Backend.DTO.Product.Update.UpdateProductAttributeRequest;
+import com.rgiftings.Backend.DTO.Product.Update.UpdateProductAttributeValueRequest;
+import com.rgiftings.Backend.DTO.Product.Update.UpdateProductRequest;
+import com.rgiftings.Backend.Model.Attribute.AttributeType;
+import com.rgiftings.Backend.Model.Attribute.AttributeValue;
+import com.rgiftings.Backend.Model.Product.Product;
+import com.rgiftings.Backend.Model.Product.ProductAttribute;
+import com.rgiftings.Backend.Model.Product.ProductAttributeValue;
+import com.rgiftings.Backend.Repository.AttributeRepository;
+import com.rgiftings.Backend.Repository.AttributeValueRepository;
 import com.rgiftings.Backend.Repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,30 +38,212 @@ public class ProductService {
     @Autowired
     private AttributeRepository attributeRepository;
 
-    public ProductResponse createProduct(ProductRequest request) {
-        Product product = mapRequestToEntity(request);
-        product.setCreatedAt(LocalDateTime.now());
-        product.setUpdatedAt(LocalDateTime.now());
-        Product createdProduct = productRepository.save(product);
-        return mapToResponse(createdProduct);
+    @Autowired
+    private AttributeValueRepository attributeValueRepository;
+
+    public String createProduct(ProductRequest productRequest) {
+        Product newProduct = new Product();
+        newProduct.setName(productRequest.name());
+        newProduct.setDescription(productRequest.description());
+        newProduct.setBasePrice(productRequest.basePrice());
+        newProduct.setStock(productRequest.stock());
+        newProduct.setCategory(productRequest.category());
+        newProduct.setImageUrl(productRequest.imageUrl());
+        List<ProductAttribute> productAttributes = mapProductAttributes(newProduct, productRequest);
+        newProduct.setAttributes(productAttributes);
+        newProduct.setCreatedAt(LocalDateTime.now());
+        newProduct.setUpdatedAt(LocalDateTime.now());
+        Product createdProduct = productRepository.save(newProduct);
+        return "CREATED";
     }
+
+    public List<ProductAttribute> mapProductAttributes(Product newProduct, ProductRequest productRequest){
+        List<ProductAttribute> productAttributes = new ArrayList<>();
+
+        for(ProductAttributeRequest productAttributeRequest : productRequest.attributes()){
+            //Fetch Attribute Type
+            AttributeType attributeType = attributeRepository.findById(productAttributeRequest.attributeTypeId())
+                    .orElseThrow(() -> new IllegalArgumentException("Attribute type not found with id: " + productAttributeRequest.attributeTypeId()));
+
+            ProductAttribute productAttribute = new ProductAttribute();
+            productAttribute.setProduct(newProduct);
+            productAttribute.setAttributeType(attributeType);
+            productAttribute.setLabel(productAttributeRequest.label());
+            List<ProductAttributeValue> productAttributeValues = getProductValuesSet(productAttribute,productAttributeRequest);
+            productAttribute.setValues(productAttributeValues);
+
+            productAttributes.add(productAttribute);
+        }
+
+        return productAttributes;
+    }
+
+    public List<ProductAttributeValue> getProductValuesSet(ProductAttribute productAttribute, ProductAttributeRequest productAttributeRequest){
+        List<ProductAttributeValue> productAttributeValues = new ArrayList<>();
+
+        for(ProductAttributeValueRequest productAttributeValueRequest : productAttributeRequest.values()){
+
+            //Fetch Attribute Values
+            AttributeValue attributeValue = attributeValueRepository.findById(productAttributeValueRequest.attributeValueId())
+                    .orElseThrow(() -> new IllegalArgumentException("Attribute value not found with id: " + productAttributeValueRequest.attributeValueId()));
+
+            ProductAttributeValue productAttributeValue = new ProductAttributeValue();
+            productAttributeValue.setProductAttribute(productAttribute);
+            productAttributeValue.setAttributeValue(attributeValue);
+            productAttributeValue.setExtraPrice(productAttributeValueRequest.extraPrice());
+            productAttributeValues.add(productAttributeValue);
+        }
+
+        return productAttributeValues;
+    }
+
 
     public List<ProductResponse> getProducts() {
-        return productRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
+        List<Product> allProducts = productRepository.findAll();
+        List<ProductResponse> productResponses = new ArrayList<>();
+
+        for(Product product : allProducts){
+            Set<ProductAttributeResponse> productAttributeResponses = new HashSet<>();
+
+            for(ProductAttribute productAttribute : product.getAttributes()){
+
+                List<ProductAttributeValueResponse> productAttributeValueResponses = new ArrayList<>();
+                for(ProductAttributeValue productAttributeValue : productAttribute.getValues()){
+                    ProductAttributeValueResponse productAttributeValueResponse = new ProductAttributeValueResponse(
+                            productAttributeValue.getId(),
+                            productAttributeValue.getAttributeValue().getId(),
+                            productAttributeValue.getAttributeValue().getValue(),
+                            productAttributeValue.getExtraPrice()
+                    );
+                    productAttributeValueResponses.add(productAttributeValueResponse);
+                }
+
+
+                ProductAttributeResponse productAttributeResponse = new ProductAttributeResponse(
+                        productAttribute.getId(),
+                        productAttribute.getAttributeType().getId(),
+                        productAttribute.getLabel(),
+                        productAttributeValueResponses
+                );
+                productAttributeResponses.add(productAttributeResponse);
+            }
+
+            ProductResponse productResponse = new ProductResponse(
+                    product.getId(),
+                    product.getName(),
+                    product.getDescription(),
+                    product.getBasePrice(),
+                    product.getStock(),
+                    product.getCategory(),
+                    product.getImageUrl(),
+                    productAttributeResponses,
+                    product.getCreatedAt(),
+                    product.getUpdatedAt()
+            );
+
+            productResponses.add(productResponse);
+        }
+        return productResponses;
     }
 
-    public ProductResponse updateProduct(Long id, ProductRequest request) {
+    public String updateProduct(Long id, UpdateProductRequest updateProductRequest) {
         Product existingProduct = productRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Product not found with id: " + id));
+                .orElseThrow(() -> new RuntimeException("Product Not Found"));
 
-        applyRequestToEntity(existingProduct, request);
-        existingProduct.setUpdatedAt(LocalDateTime.now());
-        Product updatedProduct = productRepository.save(existingProduct);
-        return mapToResponse(updatedProduct);
+        existingProduct.setName(updateProductRequest.name());
+        existingProduct.setDescription(updateProductRequest.description());
+        existingProduct.setBasePrice(updateProductRequest.basePrice());
+        existingProduct.setStock(updateProductRequest.stock());
+        existingProduct.setUpdatedAt(updateProductRequest.updatedAt());
+        existingProduct.setCategory(updateProductRequest.category());
+        existingProduct.setImageUrl(updateProductRequest.imageUrl());
+
+        // Existing values (Hibernate-managed)
+        List<ProductAttribute> currentAttributes = existingProduct.getAttributes();
+        List<Long> incomingIds = updateProductRequest.productAttributeRequestList().stream()
+                .map(UpdateProductAttributeRequest::id)
+                .toList();
+
+        currentAttributes.removeIf(val -> !incomingIds.contains(val.getId()));
+
+
+        // Step 2 : Update Existing Ones + Add new ones
+        for(UpdateProductAttributeRequest updateProductAttributeRequest  : updateProductRequest.productAttributeRequestList()){
+            if(updateProductAttributeRequest.id() != null){
+                ProductAttribute existingProductAttribute = currentAttributes.stream()
+                        .filter(attr -> updateProductAttributeRequest.id().equals(attr.getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new RuntimeException("Product Attribute not Found "+ updateProductAttributeRequest.id()));
+
+                existingProductAttribute.setLabel(updateProductAttributeRequest.label());
+
+                List<ProductAttributeValue> existingProdAttrValues = existingProductAttribute.getValues();
+                List<Long> incomingProdAttrValueIds = updateProductAttributeRequest.productAttributeValueRequestList().stream()
+                        .map(UpdateProductAttributeValueRequest::id)
+                        .toList();
+                existingProdAttrValues.removeIf(attrVal -> !incomingProdAttrValueIds.contains(attrVal.getId()));
+
+                //Updating or Creating Product Attribute values
+                for(UpdateProductAttributeValueRequest updateProductAttributeValueRequest  : updateProductAttributeRequest.productAttributeValueRequestList()){
+
+                    if(updateProductAttributeValueRequest.id() != null) {
+                        ProductAttributeValue existingProdAttrValue = existingProdAttrValues.stream()
+                                .filter(val -> updateProductAttributeValueRequest.id().equals(val.getId()))
+                                .findFirst()
+                                .orElseThrow(() -> new RuntimeException("Prod Atttr value Not found " + updateProductAttributeValueRequest.id()));
+
+                        existingProdAttrValue.setExtraPrice(updateProductAttributeValueRequest.extraPrice());
+                    }
+                    else{
+                        //create new prod attr value
+                        ProductAttributeValue newProdAttrvalue = new ProductAttributeValue();
+                        newProdAttrvalue.setProductAttribute(existingProductAttribute);
+                        AttributeValue attributeValue = attributeValueRepository.findById(updateProductAttributeValueRequest.id()).orElseThrow(() -> new RuntimeException("Attribute Value is not valid 1"));
+                        newProdAttrvalue.setAttributeValue(attributeValue);
+                        newProdAttrvalue.setExtraPrice(updateProductAttributeValueRequest.extraPrice());
+
+                        existingProdAttrValues.add(newProdAttrvalue);
+                    }
+                }
+            }
+            else{
+                ProductAttribute newProductAttribute = new ProductAttribute();
+                newProductAttribute.setProduct(existingProduct);
+
+                //fetch Attribute Type
+                AttributeType attributeType = attributeRepository.findById(updateProductAttributeRequest.attributeTypeId())
+                        .orElseThrow(() -> new RuntimeException("Attribute Type not found"));
+
+                newProductAttribute.setAttributeType(attributeType);
+                newProductAttribute.setLabel(updateProductAttributeRequest.label());
+
+                List<ProductAttributeValue> productAttributeValueList = new ArrayList<>();
+                for(UpdateProductAttributeValueRequest updateProdAttrValueRequest : updateProductAttributeRequest.productAttributeValueRequestList()){
+
+                    ProductAttributeValue newProdAttrValue = new ProductAttributeValue();
+                    AttributeValue attributeValue = attributeValueRepository.findById(updateProdAttrValueRequest.AttributeValueId())
+                            .orElseThrow(() -> new RuntimeException("Attribute Value not found" + updateProdAttrValueRequest.AttributeValueId()));
+
+
+                    newProdAttrValue.setProductAttribute(newProductAttribute);
+                    newProdAttrValue.setAttributeValue(attributeValue);
+                    newProdAttrValue.setExtraPrice(updateProdAttrValueRequest.extraPrice());
+                    productAttributeValueList.add(newProdAttrValue);
+                }
+                newProductAttribute.setValues(productAttributeValueList);
+                currentAttributes.add(newProductAttribute);
+
+            }
+
+        }
+
+
+        productRepository.save(existingProduct);
+
+        return "Updated";
     }
+
+
 
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
@@ -65,158 +252,6 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    private Product mapRequestToEntity(ProductRequest request) {
-        Product product = new Product();
-        applyRequestToEntity(product, request);
-        return product;
-    }
 
-    private void applyRequestToEntity(Product product, ProductRequest request) {
-        product.setName(request.name());
-        product.setDescription(request.description());
-        product.setBasePrice(request.basePrice());
-        product.setStock(request.stock());
-        product.setCategory(request.category());
-        product.setImageUrl(request.imageUrl());
-        if (product.getAttributes() == null) {
-            product.setAttributes(new HashSet<>());
-        }
-        syncProductAttributes(product, request.attributes());
-    }
 
-    private ProductResponse mapToResponse(Product product) {
-        return new ProductResponse(
-                product.getId(),
-                product.getName(),
-                product.getDescription(),
-                product.getBasePrice(),
-                product.getStock(),
-                product.getCategory(),
-                product.getImageUrl(),
-                mapAttributesToResponse(product.getAttributes()),
-                product.getCreatedAt(),
-                product.getUpdatedAt()
-        );
-    }
-
-    private void syncProductAttributes(Product product, List<ProductAttributeRequest> attributes) {
-        Set<ProductAttribute> productAttributes = product.getAttributes();
-        if (productAttributes == null) {
-            productAttributes = new HashSet<>();
-            product.setAttributes(productAttributes);
-        } else {
-            productAttributes.clear();
-        }
-
-        if (attributes == null) {
-            return;
-        }
-
-        for (ProductAttributeRequest attribute : attributes) {
-            AttributeType attributeType = attributeRepository.findById(attribute.attributeTypeId())
-                    .orElseThrow(() -> new IllegalArgumentException(
-                            "Attribute type not found with id: " + attribute.attributeTypeId()
-                    ));
-
-            ProductAttribute productAttribute = new ProductAttribute();
-            productAttribute.setProduct(product);
-            productAttribute.setAttributeType(attributeType);
-            productAttribute.setLabel(attribute.label());
-
-            syncProductAttributeValues(productAttribute, attribute.values());
-
-            productAttributes.add(productAttribute);
-        }
-    }
-
-    private void syncProductAttributeValues(ProductAttribute productAttribute, List<ProductAttributeValueRequest> values) {
-        Set<ProductAttributeValue> valueEntities = productAttribute.getValues();
-        if (valueEntities == null) {
-            valueEntities = new HashSet<>();
-            productAttribute.setValues(valueEntities);
-        } else {
-            valueEntities.clear();
-        }
-
-        if (values == null) {
-            return;
-        }
-
-        for (ProductAttributeValueRequest valueRequest : values) {
-            AttributeValue baseValue;
-            if (valueRequest.attributeValueId() != null) {
-                baseValue = findAttributeValue(productAttribute.getAttributeType(), valueRequest.attributeValueId());
-            } else {
-                if (valueRequest.value() == null || valueRequest.value().isBlank()) {
-                    throw new IllegalArgumentException("Attribute value text is required when attributeValueId is not provided");
-                }
-                baseValue = new AttributeValue();
-                baseValue.setAttributeType(productAttribute.getAttributeType());
-                baseValue.setValue(valueRequest.value());
-                baseValue.setDisplayCode(valueRequest.displayCode());
-                attachAndPersistNewValue(productAttribute.getAttributeType(), baseValue);
-            }
-
-            ProductAttributeValue productAttributeValue = new ProductAttributeValue();
-            productAttributeValue.setProductAttribute(productAttribute);
-            productAttributeValue.setAttributeValue(baseValue);
-            productAttributeValue.setExtraPrice(valueRequest.extraPrice() != null ? valueRequest.extraPrice() : 0.0);
-
-            valueEntities.add(productAttributeValue);
-        }
-    }
-
-    private AttributeValue findAttributeValue(AttributeType attributeType, Long attributeValueId) {
-        if (attributeType.getValues() == null) {
-            throw new IllegalArgumentException("Attribute value not found with id: " + attributeValueId);
-        }
-
-        return attributeType.getValues()
-                .stream()
-                .filter(value -> attributeValueId.equals(value.getId()))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Attribute value not found with id: " + attributeValueId));
-    }
-
-    private void attachAndPersistNewValue(AttributeType attributeType, AttributeValue baseValue) {
-        List<AttributeValue> values = attributeType.getValues();
-        if (values == null) {
-            values = new ArrayList<>();
-            attributeType.setValues(values);
-        }
-        values.add(baseValue);
-        attributeRepository.save(attributeType);
-    }
-
-    private List<ProductAttributeResponse> mapAttributesToResponse(Set<ProductAttribute> attributes) {
-        if (attributes == null) {
-            return List.of();
-        }
-
-        return attributes.stream()
-                .map(attribute -> new ProductAttributeResponse(
-                        attribute.getId(),
-                        attribute.getLabel(),
-                        attribute.getAttributeType().getId(),
-                        attribute.getAttributeType().getType(),
-                        mapAttributeValuesToResponse(attribute.getValues())
-                ))
-                .toList();
-    }
-
-    private List<ProductAttributeValueResponse> mapAttributeValuesToResponse(Set<ProductAttributeValue> values) {
-        if (values == null) {
-            return List.of();
-        }
-
-        return values.stream()
-                .map(value -> new ProductAttributeValueResponse(
-                        value.getId(),
-                        value.getAttributeValue().getId(),
-                        value.getAttributeValue().getValue(),
-                        value.getAttributeValue().getDisplayCode(),
-                        value.getExtraPrice()
-                ))
-                .toList();
-    }
 }
