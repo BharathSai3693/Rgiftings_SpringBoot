@@ -9,6 +9,7 @@ public record ProductRequest(
         String description,
         BigDecimal basePrice,
         Integer stock,
+        BigDecimal taxRate,
         String category,
         String imageUrl,
         List<ProductAttributeRequest> attributes

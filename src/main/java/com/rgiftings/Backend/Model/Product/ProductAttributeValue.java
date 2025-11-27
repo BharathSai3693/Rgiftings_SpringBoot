@@ -5,6 +5,8 @@ import com.rgiftings.Backend.Model.Attribute.AttributeValue;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
@@ -25,5 +27,5 @@ public class ProductAttributeValue {
     @JoinColumn(nullable = false)
     private AttributeValue AttributeValue;
 
-    private Double extraPrice = 0.0;
+    private BigDecimal extraPrice;
 }

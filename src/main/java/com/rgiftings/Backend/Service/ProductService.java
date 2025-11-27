@@ -49,6 +49,7 @@ public class ProductService {
         newProduct.setStock(productRequest.stock());
         newProduct.setCategory(productRequest.category());
         newProduct.setImageUrl(productRequest.imageUrl());
+        newProduct.setTaxRate(productRequest.taxRate());
         List<ProductAttribute> productAttributes = mapProductAttributes(newProduct, productRequest);
         newProduct.setAttributes(productAttributes);
         newProduct.setCreatedAt(LocalDateTime.now());
@@ -127,19 +128,20 @@ public class ProductService {
                 );
                 productAttributeResponses.add(productAttributeResponse);
             }
+            ProductResponse productResponse = ProductResponse.builder()
+                    .id(product.getId())
+                    .name(product.getName())
+                    .description(product.getDescription())
+                    .basePrice(product.getBasePrice())
+                    .stock(product.getStock())
+                    .taxRate(product.getTaxRate())
+                    .category(product.getCategory())
+                    .imageUrl(product.getImageUrl())
+                    .attributes(productAttributeResponses)
+                    .createdAt(product.getCreatedAt())
+                    .updatedAt(product.getUpdatedAt())
+                    .build();
 
-            ProductResponse productResponse = new ProductResponse(
-                    product.getId(),
-                    product.getName(),
-                    product.getDescription(),
-                    product.getBasePrice(),
-                    product.getStock(),
-                    product.getCategory(),
-                    product.getImageUrl(),
-                    productAttributeResponses,
-                    product.getCreatedAt(),
-                    product.getUpdatedAt()
-            );
 
             productResponses.add(productResponse);
         }
@@ -153,6 +155,7 @@ public class ProductService {
         existingProduct.setName(updateProductRequest.name());
         existingProduct.setDescription(updateProductRequest.description());
         existingProduct.setBasePrice(updateProductRequest.basePrice());
+        existingProduct.setTaxRate(updateProductRequest.taxRate());
         existingProduct.setStock(updateProductRequest.stock());
         existingProduct.setUpdatedAt(updateProductRequest.updatedAt());
         existingProduct.setCategory(updateProductRequest.category());

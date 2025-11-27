@@ -39,6 +39,8 @@ public class Product {
 
     private String imageUrl;
 
+    private BigDecimal taxRate;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductAttribute> attributes = new ArrayList<>();
 

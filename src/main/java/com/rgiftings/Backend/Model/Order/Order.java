@@ -22,13 +22,20 @@ public class Order {
     private String guestEmail;
     private String guestPhone;
     private Long addressId;
-    private BigDecimal totalPrice;
+
     private String status;
     private LocalDateTime orderCreatedAt;
     private LocalDateTime orderUpdatedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
+
+    private BigDecimal totalPrice;
+    private BigDecimal totalTax;
+    private BigDecimal grandTotal;
+
+
+
 
 
 
