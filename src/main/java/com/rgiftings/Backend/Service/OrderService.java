@@ -85,7 +85,7 @@ public class OrderService {
             OrderItemAttribute newOrderItemAttribute = new OrderItemAttribute();
             newOrderItemAttribute.setOrderItem(newOrderItem);
 
-            ProductAttribute productAttribute = product.getAttributes().stream()
+            ProductAttribute productAttribute = product.getProductAttributes().stream()
                             .filter(attr -> attr.getId().equals(orderItemAttributeRequest.productAttributeId()))
                                     .findFirst()
                                             .orElseThrow(() -> new RuntimeException("Product Attribute not found id: "+ orderItemAttributeRequest.productAttributeId()));
@@ -105,7 +105,7 @@ public class OrderService {
         for(OrderItemAttributeValueRequest orderItemAttributeValueRequest : orderItemAttributeValueRequestList){
             OrderItemAttributeValue orderItemAttributeValue = new OrderItemAttributeValue();
 
-            ProductAttributeValue productAttributeValue = productAttribute.getValues().stream()
+            ProductAttributeValue productAttributeValue = productAttribute.getProductAttributeValues().stream()
                             .filter(value -> value.getId().equals(orderItemAttributeValueRequest.productAttributeValueId()))
                                     .findFirst()
                                             .orElseThrow(() -> new RuntimeException("Product Attribute Value Not Found with Id: " + orderItemAttributeValueRequest.productAttributeValueId()));
@@ -208,7 +208,7 @@ public class OrderService {
 
                     OrderItemAttributeResponse orderItemAttributeResponse = OrderItemAttributeResponse.builder()
                             .productAttributeId(orderItemAttribute.getProductAttribute().getId())
-                            .productAttributeLabel(orderItemAttribute.getProductAttribute().getLabel())
+                            .productAttributeLabel(orderItemAttribute.getProductAttribute().getProductAttributeLabel())
                             .orderItemAttributeValueResponseList(orderItemAttributeValueResponseList)
                             .build();
                     orderItemAttributeResponseList.add(orderItemAttributeResponse);

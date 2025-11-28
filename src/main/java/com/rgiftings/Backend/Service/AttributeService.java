@@ -17,9 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 @Service
 public class AttributeService {
@@ -31,64 +29,68 @@ public class AttributeService {
     private AttributeValueRepository attributeValueRepository;
 
     public String createAttribute(AttributeTypeRequest attributeTypeRequest) {
-        AttributeType attributeType = new AttributeType();
-        attributeType.setType(attributeTypeRequest.type());
-        attributeType.setDescription(attributeTypeRequest.description());
 
-        List<AttributeValue> attributeValues = new ArrayList<>();
-        for(AttributeValueRequest attributeValueRequest : attributeTypeRequest.attributeValueRequests()){
-            AttributeValue attributeValue = new AttributeValue();
-            attributeValue.setAttributeType(attributeType);
-            attributeValue.setValue(attributeValueRequest.value());
-            attributeValue.setDisplayCode(attributeValueRequest.displayCode());
+        AttributeType attributeType = AttributeType.builder()
+                .name(attributeTypeRequest.name())
+                .inputType(attributeTypeRequest.inputType())
+                .build();
 
-            attributeValues.add(attributeValue);
+        List<AttributeValue> attributeValueList = new ArrayList<>();
+        for(AttributeValueRequest attributeValueRequest : attributeTypeRequest.attributeValues()){
+            AttributeValue attributeValue = AttributeValue.builder()
+                    .attributeType(attributeType)
+                    .value(attributeValueRequest.value())
+                    .build();
+
+            attributeValueList.add(attributeValue);
         }
-        attributeType.setValues(attributeValues);
 
+        attributeType.setAttributeValues(attributeValueList);
         attributeRepository.save(attributeType);
         return "Attribute Created";
     }
 
-
     public List<AttributeTypeResponse> getAllAttributes() {
         List<AttributeType> attributes = attributeRepository.findAll();
+
         List<AttributeTypeResponse> attributeTypeResponses = new ArrayList<>();
         for(AttributeType attributeType : attributes){
 
-            List<AttributeValueResponse> attributeValueResponses = new ArrayList<>();
-            for(AttributeValue attributeValue  : attributeType.getValues()){
-                AttributeValueResponse attributeValueResponse = new AttributeValueResponse(
-                        attributeValue.getId(),
-                        attributeValue.getDisplayCode(),
-                        attributeValue.getValue()
-                );
-                attributeValueResponses.add(attributeValueResponse);
+            List<AttributeValueResponse> attributeValueResponseList = new ArrayList<>();
+            for(AttributeValue attributeValue : attributeType.getAttributeValues()){
+                AttributeValueResponse attributeValueResponse = AttributeValueResponse.builder()
+                        .id(attributeValue.getId())
+                        .value(attributeValue.getValue())
+                        .build();
+
+                attributeValueResponseList.add(attributeValueResponse);
             }
 
-            AttributeTypeResponse attributeTypeResponse = new AttributeTypeResponse(
-                    attributeType.getId(),
-                    attributeType.getType(),
-                    attributeType.getDescription(),
-                    attributeValueResponses
-            );
+            AttributeTypeResponse attributeTypeResponse = AttributeTypeResponse.builder()
+                    .id(attributeType.getId())
+                    .name(attributeType.getName())
+                    .inputType(attributeType.getInputType())
+                    .attributeValues(attributeValueResponseList)
+                    .build();
+
             attributeTypeResponses.add(attributeTypeResponse);
         }
-        return attributeTypeResponses;
+
+        return  attributeTypeResponses;
 
     }
 
     public String updateAttribute(Long id, UpdateAttributeRequest updateAttributeRequest) {
 
         AttributeType existing = attributeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Attribute not found"));
+                .orElseThrow(() -> new RuntimeException("Attribute Type not found id : " + id));
 
         // update simple fields
-        existing.setType(updateAttributeRequest.type());
-        existing.setDescription(updateAttributeRequest.description());
+        existing.setName(updateAttributeRequest.name());
+        existing.setInputType(updateAttributeRequest.inputType());
 
         // Existing values (Hibernate-managed)
-        List<AttributeValue> currentValues = existing.getValues();
+        List<AttributeValue> currentValues = existing.getAttributeValues();
         List<Long> incomingIds = updateAttributeRequest.attributeValues().stream()
                 .map(UpdateAttributeValueRequest::id)
                 .toList();
@@ -96,50 +98,28 @@ public class AttributeService {
         currentValues.removeIf(val -> !incomingIds.contains(val.getId()));
 
         // Step 2: Update existing ones + add new ones
-        for (UpdateAttributeValueRequest reqVal : updateAttributeRequest.attributeValues()) {
+        for (UpdateAttributeValueRequest updateAttributeValueRequest : updateAttributeRequest.attributeValues()) {
 
-            if (reqVal.id() != null) {
+            if (updateAttributeValueRequest.id() != null) {
                 // Update existing value
                 AttributeValue existingValue = currentValues.stream()
-                        .filter(v -> reqVal.id().equals(v.getId()))
+                        .filter(v -> updateAttributeValueRequest.id().equals(v.getId()))
                         .findFirst()
-                        .orElseThrow(() -> new RuntimeException("Value not found: " + reqVal.id()));
-
-                existingValue.setDisplayCode(reqVal.displayCode());
-                existingValue.setValue(reqVal.value());
-
+                        .orElseThrow(() -> new RuntimeException("Value not found: " + updateAttributeValueRequest.id()));
+                existingValue.setValue(updateAttributeValueRequest.value());
             } else {
                 // Create NEW value
-                AttributeValue newVal = new AttributeValue();
-                newVal.setValue(reqVal.value());
-                newVal.setDisplayCode(reqVal.displayCode());
-                newVal.setAttributeType(existing);
-
-                currentValues.add(newVal);
+                AttributeValue newAttributevalue = new AttributeValue();
+                newAttributevalue.setValue(updateAttributeValueRequest.value());
+                newAttributevalue.setAttributeType(existing);
+                currentValues.add(newAttributevalue);
             }
         }
-
-//        List<AttributeValue> attributeValues = new ArrayList<>();
-//        for(UpdateAttributeValueRequest updateAttributeValueRequest : updateAttributeRequest.attributeValues()){
-//            AttributeValue attributeValue = new AttributeValue();
-//            attributeValue.setId(updateAttributeValueRequest.id());
-//            attributeValue.setAttributeType(existing);
-//            attributeValue.setDisplayCode(updateAttributeValueRequest.displayCode());
-//            attributeValue.setValue(updateAttributeValueRequest.value());
-//            attributeValues.add(attributeValue);
-//        }
-//        existing.setValues(attributeValues);
-
-
         attributeRepository.save(existing);
-
         return "UPDATED";
-
     }
 
-
     public ResponseEntity<String> deleteAttribute(Long id) {
-        attributeRepository.existsById(id);
 
         if (!attributeRepository.existsById(id)) {
             return new ResponseEntity<>("NOT FOUND", HttpStatus.NOT_FOUND);
@@ -149,31 +129,6 @@ public class AttributeService {
         return new ResponseEntity<>("DELETED", HttpStatus.OK);
     }
 
-    public AttributeTypeResponse getAttributeById(Long id) {
-        AttributeType attributeType = attributeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("No Attribute found with id : " + id));
-
-        List<AttributeValueResponse> attributeValueResponses = new ArrayList<>();
-
-        for(AttributeValue attributeValue : attributeType.getValues()){
-            AttributeValueResponse attributeValueResponse = new AttributeValueResponse(
-                    attributeValue.getId(),
-                    attributeValue.getDisplayCode(),
-                    attributeValue.getValue()
-            );
-            attributeValueResponses.add(attributeValueResponse);
-        }
-
-        AttributeTypeResponse attributeTypeResponse = new AttributeTypeResponse(
-                attributeType.getId(),
-                attributeType.getType(),
-                attributeType.getDescription(),
-                attributeValueResponses
-        );
-
-        return attributeTypeResponse;
-
-    }
 }
 
 

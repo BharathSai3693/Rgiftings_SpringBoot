@@ -4,6 +4,7 @@ import lombok.Builder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Builder
@@ -12,12 +13,13 @@ public record ProductResponse(
         String name,
         String description,
         BigDecimal basePrice,
-        BigDecimal taxRate,
         Integer stock,
         String category,
         String imageUrl,
-        Set<ProductAttributeResponse> attributes,
+        BigDecimal taxRate,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        LocalDateTime updatedAt,
+        List<ProductAttributeResponse> productAttributes
+
 ) {
 }

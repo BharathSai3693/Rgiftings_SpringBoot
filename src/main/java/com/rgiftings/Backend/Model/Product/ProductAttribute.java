@@ -16,6 +16,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductAttribute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,19 +24,17 @@ public class ProductAttribute {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    @JsonIgnore
     private Product product;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private AttributeType attributeType;
+    private AttributeType attributeType; //SIZE, COLOR,
 
     @Column(nullable = false)
-    private String label;
+    private String productAttributeLabel; //PRODUCT SIZE, GIFT COLOR
 
     @OneToMany(mappedBy = "productAttribute", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductAttributeValue> values = new ArrayList<>();
+    private List<ProductAttributeValue> productAttributeValues;
 
-//    private Boolean required = false;
 
 }

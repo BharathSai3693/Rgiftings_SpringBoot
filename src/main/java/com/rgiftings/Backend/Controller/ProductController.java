@@ -33,29 +33,17 @@ public class ProductController {
         return productService.createProduct(productRequest);
     }
 
-//    @PutMapping("/product/{id}")
-//    public ResponseEntity<ProductResponse> updateProduct(@PathVariable Long id,@RequestBody ProductRequest product){
-//        ProductResponse updatedProduct = productService.updateProduct(id, product);
-//        if(updatedProduct!=null){
-//            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
-//        }
-//        else {
-//            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
 
     @PutMapping("/product/{id}")
     public String updateproduct(@PathVariable Long id, @RequestBody UpdateProductRequest updateProductRequest){
-        System.out.println("UPDATE PRODUCT CALLED");
-        System.out.println(updateProductRequest);
         String result = productService.updateProduct(id, updateProductRequest);
         return result;
     }
 
     @DeleteMapping("/product/{id}")
     public  ResponseEntity<String> deleteProduct(@PathVariable Long id){
-        productService.deleteProduct(id);
-        return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
+        String response = productService.deleteProduct(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }

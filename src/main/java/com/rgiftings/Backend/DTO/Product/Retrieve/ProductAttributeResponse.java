@@ -1,11 +1,15 @@
 package com.rgiftings.Backend.DTO.Product.Retrieve;
 
+import lombok.Builder;
+
 import java.util.List;
 
+@Builder
 public record ProductAttributeResponse(
         Long id,
-        Long attributeId,
-        String label,
-        List<ProductAttributeValueResponse> values
+        String attributeName,
+        String attributeInputType,
+        String productAttributeLabel,
+        List<ProductAttributeValueResponse> productAttributeValues
 ) {
 }

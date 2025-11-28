@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ProductAttributeValue {
 
     @Id
@@ -20,12 +21,11 @@ public class ProductAttributeValue {
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    @JsonIgnore
     private ProductAttribute productAttribute;
 
     @ManyToOne
     @JoinColumn(nullable = false)
-    private AttributeValue AttributeValue;
+    private AttributeValue attributeValue;
 
     private BigDecimal extraPrice;
 }

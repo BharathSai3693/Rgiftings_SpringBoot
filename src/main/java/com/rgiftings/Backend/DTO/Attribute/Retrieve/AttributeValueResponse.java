@@ -1,8 +1,10 @@
 package com.rgiftings.Backend.DTO.Attribute.Retrieve;
 
+import lombok.Builder;
+
+@Builder
 public record AttributeValueResponse(
-        Long valueId,
-        String displayCode,
+        Long id,
         String value
 ) {
 }

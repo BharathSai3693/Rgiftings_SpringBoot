@@ -5,7 +5,7 @@ import java.util.List;
 public record UpdateProductAttributeRequest(
         Long id,
         Long attributeTypeId,
-        String label,
-        List<UpdateProductAttributeValueRequest> productAttributeValueRequestList
+        String productAttributeLabel,
+        List<UpdateProductAttributeValueRequest> productAttributeValues
 ) {
 }

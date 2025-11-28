@@ -18,42 +18,26 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "products")
+@Builder
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;
-
     @Column(nullable = false)
     private BigDecimal basePrice;
     private Integer stock;
+    private String category;
+    private String imageUrl;
+    private BigDecimal taxRate;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
-    private String category;
-
-    private String imageUrl;
-
-    private BigDecimal taxRate;
-
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductAttribute> attributes = new ArrayList<>();
+    private List<ProductAttribute> productAttributes;
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "id=" + id +
-                ", type='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", basePrice=" + basePrice +
-                ", stock=" + stock +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                '}';
-    }
 }

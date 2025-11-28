@@ -10,6 +10,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AttributeType {
 
     @Id
@@ -17,20 +18,20 @@ public class AttributeType {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String type;
+    private String name; // SIZE, COLOR, MATERIAL
 
-    private String description;
+    private String inputType; // TEXT, FILE, DROPDOWN, MULTIPLE, RADIO, CHECKBOX
 
     @OneToMany(mappedBy = "attributeType", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AttributeValue> values;
+    private List<AttributeValue> attributeValues;
 
     @Override
     public String toString() {
         return "AttributeType{" +
                 "id=" + id +
-                ", type='" + type + '\'' +
-                ", description='" + description + '\'' +
-                ", values=" + values +
+                ", name='" + name + '\'' +
+                ", inputType='" + inputType + '\'' +
+                ", attributeValues=" + attributeValues +
                 '}';
     }
 }

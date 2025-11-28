@@ -9,11 +9,10 @@ public record UpdateProductRequest(
         String name,
         String description,
         BigDecimal basePrice,
-        BigDecimal taxRate,
         Integer stock,
-        LocalDateTime updatedAt,
         String category,
         String imageUrl,
-        List<UpdateProductAttributeRequest> productAttributeRequestList
+        BigDecimal taxRate,
+        List<UpdateProductAttributeRequest> productAttributes
 ) {
 }

@@ -30,16 +30,12 @@ public class AttributeController {
         return new ResponseEntity<>(attributes, HttpStatus.OK);
     }
 
-    @GetMapping("/attribute/{id}")
-    public ResponseEntity<AttributeTypeResponse> getAttributeById(@PathVariable Long id){
 
-        AttributeTypeResponse attributeTypeResponse = attributeService.getAttributeById(id);
-        return new ResponseEntity<>(attributeTypeResponse,HttpStatus.OK);
-    }
 
     @PostMapping("/attribute")
     public String createAttribute(@RequestBody AttributeTypeRequest attributeTypeRequest){
-
+        System.out.println("Attribute Type Request : ");
+        System.out.println(attributeTypeRequest);
         attributeService.createAttribute(attributeTypeRequest);
         return "created";
     }

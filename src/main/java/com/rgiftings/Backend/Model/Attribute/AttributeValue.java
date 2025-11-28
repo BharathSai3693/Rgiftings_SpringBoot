@@ -10,6 +10,7 @@ import lombok.*;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class AttributeValue {
 
     @Id
@@ -17,20 +18,17 @@ public class AttributeValue {
     private Long id;
 
     @ManyToOne
-    @JsonIgnore
+    @JoinColumn(nullable = false)
     private AttributeType attributeType;
 
     @Column(nullable = false)
-    private String value;
-
-    private String displayCode;
+    private String value; // RED,YELLOW, SMALL, LARGER
 
     @Override
     public String toString() {
         return "AttributeValue{" +
                 "id=" + id +
                 ", value='" + value + '\'' +
-                ", displayCode='" + displayCode + '\'' +
                 '}';
     }
 }

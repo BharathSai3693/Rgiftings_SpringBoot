@@ -4,7 +4,7 @@ import java.util.List;
 
 public record ProductAttributeRequest(
         Long attributeTypeId,
-        String label,
-        List<ProductAttributeValueRequest> values
+        String productAttributeLabel,
+        List<ProductAttributeValueRequest> productAttributeValues
 ) {
 }
