@@ -40,7 +40,7 @@ Thumbs.db
 *.local.properties
 *.env
 .env
-rgiftings-6dc36-firebase-adminsdk-fbsvc-1e634ec82a.json
+**/rgiftings-6dc36-firebase-adminsdk-fbsvc-1e634ec82a.json
 
 # Generated content
 hs_err_pid*
