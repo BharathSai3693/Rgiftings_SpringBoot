@@ -1,6 +1,7 @@
 package com.rgiftings.Backend.Controller;
 
-import com.rgiftings.Backend.DTO.Order.CREATE.OrderRequest;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.rgiftings.Backend.DTO.Order.CREATE.CreateOrderRequest;
 import com.rgiftings.Backend.DTO.Order.RETRIEVE.OrderResponse;
 import com.rgiftings.Backend.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +20,20 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/order/place")
-    public ResponseEntity<String> placeOrder(@RequestBody OrderRequest orderRequest){
+    public ResponseEntity<String> placeOrder(@RequestBody CreateOrderRequest orderRequest){
         String orderResponse = orderService.placeOrder(orderRequest);
         return new ResponseEntity<>(orderResponse, HttpStatus.OK);
     }
 
     @GetMapping("/orders/user/{userId}")
-    public ResponseEntity<List<OrderResponse>> retrieveOrderbyUserId(@PathVariable Long userId){
-        List<OrderResponse> orderResponseList = orderService.retrieveOrderbyUserId(userId);
+    public ResponseEntity<List<OrderResponse>> retrieveOrderbyUserId(@RequestHeader("Authorization") String authHeader, @PathVariable Long userId) throws FirebaseAuthException {
+        List<OrderResponse> orderResponseList = orderService.retrieveOrderbyUserId(authHeader, userId);
+        return  new ResponseEntity<>(orderResponseList, HttpStatus.OK);
+    }
+
+    @GetMapping("/orders/admin")
+    public ResponseEntity<List<OrderResponse>> retrieveOrderbyUserId(@RequestHeader("Authorization") String authHeader) throws FirebaseAuthException {
+        List<OrderResponse> orderResponseList = orderService.retrieveAllOrders(authHeader);
         return  new ResponseEntity<>(orderResponseList, HttpStatus.OK);
     }
 

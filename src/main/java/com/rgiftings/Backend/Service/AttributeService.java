@@ -10,7 +10,9 @@ import com.rgiftings.Backend.Model.Attribute.AttributeType;
 import com.rgiftings.Backend.Model.Attribute.AttributeValue;
 import com.rgiftings.Backend.Repository.AttributeRepository;
 import com.rgiftings.Backend.Repository.AttributeValueRepository;
+import com.rgiftings.Backend.Repository.ProductAttributeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class AttributeService {
 
     @Autowired
     private AttributeValueRepository attributeValueRepository;
+
+    @Autowired
+    private ProductAttributeRepository productAttributeRepository;
 
     public String createAttribute(AttributeTypeRequest attributeTypeRequest) {
 
@@ -93,6 +98,7 @@ public class AttributeService {
         List<AttributeValue> currentValues = existing.getAttributeValues();
         List<Long> incomingIds = updateAttributeRequest.attributeValues().stream()
                 .map(UpdateAttributeValueRequest::id)
+                .filter(attrValId -> attrValId != null)
                 .toList();
 
         currentValues.removeIf(val -> !incomingIds.contains(val.getId()));
@@ -125,11 +131,19 @@ public class AttributeService {
             return new ResponseEntity<>("NOT FOUND", HttpStatus.NOT_FOUND);
         }
 
-        attributeRepository.deleteById(id);
+        long referencedCount = productAttributeRepository.countByAttributeType_Id(id);
+        if (referencedCount > 0) {
+            return new ResponseEntity<>("ATTRIBUTE IN USE", HttpStatus.CONFLICT);
+        }
+
+        try {
+            attributeRepository.deleteById(id);
+        } catch (DataIntegrityViolationException ex) {
+            return new ResponseEntity<>("ATTRIBUTE IN USE", HttpStatus.CONFLICT);
+        }
         return new ResponseEntity<>("DELETED", HttpStatus.OK);
     }
 
 }
-
 
 

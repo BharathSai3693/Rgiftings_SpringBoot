@@ -4,7 +4,10 @@
   "basePrice": 19.99,
   "stock": 250,
   "category": "Apparel",
-  "imageUrl": "https://example.com/images/premium-tee.png",
+  "imageUrls": [
+    "https://example.com/images/premium-tee-front.png",
+    "https://example.com/images/premium-tee-back.png"
+  ],
   "attributes": [
     {
       "attributeTypeId": 1,

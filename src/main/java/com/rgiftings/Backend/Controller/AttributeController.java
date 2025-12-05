@@ -34,8 +34,7 @@ public class AttributeController {
 
     @PostMapping("/attribute")
     public String createAttribute(@RequestBody AttributeTypeRequest attributeTypeRequest){
-        System.out.println("Attribute Type Request : ");
-        System.out.println(attributeTypeRequest);
+
         attributeService.createAttribute(attributeTypeRequest);
         return "created";
     }

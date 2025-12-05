@@ -6,7 +6,9 @@ import java.util.List;
 
 @Builder
 public record OrderItemAttributeResponse(
-        Long productAttributeId,
+        Long orderItemAttributeId,
+        Long attributeTypeId,
+        String attributeTypeName,
         String productAttributeLabel,
         List<OrderItemAttributeValueResponse> orderItemAttributeValueResponseList
 ) {

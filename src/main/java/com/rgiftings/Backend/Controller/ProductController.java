@@ -20,6 +20,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    // GET ALL PRODUCTS
     @GetMapping("/products")
     public ResponseEntity<List<ProductResponse>> getProducts(){
         List<ProductResponse> products = new ArrayList<>();
@@ -27,23 +28,30 @@ public class ProductController {
         return new ResponseEntity<>(products, HttpStatus.OK);
     }
 
-
+    // CREATE PRODUCT
     @PostMapping("/product")
     public String createProduct(@RequestBody ProductRequest productRequest){
         return productService.createProduct(productRequest);
     }
 
-
+    // UPDATE PRODUCT
     @PutMapping("/product/{id}")
     public String updateproduct(@PathVariable Long id, @RequestBody UpdateProductRequest updateProductRequest){
         String result = productService.updateProduct(id, updateProductRequest);
         return result;
     }
 
+    //DELETE PRODUCT
     @DeleteMapping("/product/{id}")
     public  ResponseEntity<String> deleteProduct(@PathVariable Long id){
-        String response = productService.deleteProduct(id);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        try {
+            String response = productService.deleteProduct(id);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
     }
 
 }

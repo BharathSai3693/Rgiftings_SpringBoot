@@ -6,8 +6,10 @@ import java.math.BigDecimal;
 
 @Builder
 public record OrderItemAttributeValueResponse(
-
-        String ProductAttributeValue_value,
+        Long orderItemAttributeValueId,
+        Long attributeValueId,
+        String attributeValueValue,
+        Long productAttributeValueId,
         BigDecimal extraPrice,
         String customText,
         String fileUrl

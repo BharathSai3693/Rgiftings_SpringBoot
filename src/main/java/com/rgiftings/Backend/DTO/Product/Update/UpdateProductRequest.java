@@ -11,7 +11,7 @@ public record UpdateProductRequest(
         BigDecimal basePrice,
         Integer stock,
         String category,
-        String imageUrl,
+        List<UpdateProductImageRequest> imageUrls,
         BigDecimal taxRate,
         List<UpdateProductAttributeRequest> productAttributes
 ) {

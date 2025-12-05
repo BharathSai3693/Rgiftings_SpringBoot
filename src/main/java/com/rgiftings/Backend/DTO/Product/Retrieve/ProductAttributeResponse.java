@@ -7,6 +7,7 @@ import java.util.List;
 @Builder
 public record ProductAttributeResponse(
         Long id,
+        Long attributeTypeId,
         String attributeName,
         String attributeInputType,
         String productAttributeLabel,

@@ -15,7 +15,7 @@ public record ProductResponse(
         BigDecimal basePrice,
         Integer stock,
         String category,
-        String imageUrl,
+        List<ProductImageResponse> imageUrls,
         BigDecimal taxRate,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,

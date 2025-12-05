@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,15 +22,16 @@ public class OrderItemAttribute {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "order_item_id",nullable = false)
     private OrderItem orderItem;
 
-    @ManyToOne
-    @JoinColumn(nullable = false)
-    private ProductAttribute productAttribute;
+    private Long attributeTypeId; //Analytical purpose
+    private String attributeTypeName;
+    private String productAttributeLabel; // Product Attribute Label (Frame Size)
 
+    @Builder.Default
     @OneToMany(mappedBy = "orderItemAttribute", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItemAttributeValue> selectedValues;
+    private List<OrderItemAttributeValue> selectedAttributeValues = new ArrayList<>();
 
 
 

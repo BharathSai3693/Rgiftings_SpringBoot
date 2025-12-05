@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,21 +19,28 @@ import java.util.List;
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long orderItemId;
-    private Integer quantity;
-    private BigDecimal basePrice;
-    private BigDecimal taxRate;
+    private Long id;
     @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
     @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderItemAttribute> orderItemAttributeList;
+    @Column(nullable = false)
+    private String productName;      // copy of product.getName(), so that future product edits won't spoil
 
+    @Column(nullable = false)
+    private Integer quantity;
+
+    @Column(nullable = false)
+    private BigDecimal basePrice;
+    private BigDecimal taxRate; // tax rate at that time , ex:18%
     private BigDecimal lineExtraPrice; // total extra price per item
-    private BigDecimal lineTotalPrice; //no tax :(Base price + extra price)*quantity
     private BigDecimal lineTax;
+    private BigDecimal lineTotalPrice; //no tax :(Base price + extra price)*quantity
 
-
+    @Builder.Default
+    @OneToMany(mappedBy = "orderItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItemAttribute> orderItemAttributes = new ArrayList<>();
 }

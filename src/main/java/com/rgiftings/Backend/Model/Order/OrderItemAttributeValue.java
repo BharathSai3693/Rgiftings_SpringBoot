@@ -21,15 +21,20 @@ public class OrderItemAttributeValue {
     private Long id;
 
     @ManyToOne()
+    @JoinColumn(name = "order_item_attribute_id", nullable = false)
     private OrderItemAttribute orderItemAttribute;
 
-    @ManyToOne()
-    @JoinColumn(nullable = false)
-    private ProductAttributeValue productAttributeValue;
+    private Long attributeValueId;
+    private String attributeValueValue; // SMALL, LARGE, RED, YELLOW
 
+    @Column(nullable = true)
+    private Long productAttributeValueId; // For Analytical Purpose
+
+    @Column(nullable = true)
     private BigDecimal extraPrice;
-    private String customText;
-    private String fileUrl;
 
+    @Builder.Default
+    private String customText = null;
+    private String fileUrl;
 
 }

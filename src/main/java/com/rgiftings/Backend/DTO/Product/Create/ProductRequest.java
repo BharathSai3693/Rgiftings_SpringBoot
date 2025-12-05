@@ -1,5 +1,6 @@
 package com.rgiftings.Backend.DTO.Product.Create;
 
+import com.rgiftings.Backend.Model.Product.ProductImage;
 import lombok.Builder;
 
 import java.math.BigDecimal;
@@ -13,7 +14,7 @@ public record ProductRequest(
         BigDecimal basePrice,
         Integer stock,
         String category,
-        String imageUrl,
+        List<ProductImageRequest> imageUrls,
         BigDecimal taxRate,
         List<ProductAttributeRequest> productAttributes
 ) {

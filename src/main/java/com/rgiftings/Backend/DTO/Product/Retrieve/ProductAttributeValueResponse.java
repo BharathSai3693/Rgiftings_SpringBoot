@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 @Builder
 public record ProductAttributeValueResponse(
         Long id,
+        Long attributeValueId,
         String attributeValueName,
         BigDecimal extraPrice
 ) {

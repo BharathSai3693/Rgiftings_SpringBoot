@@ -1,22 +1,16 @@
-package com.rgiftings.Backend.DTO.Order.RETRIEVE;
-
-import lombok.Builder;
+package com.rgiftings.Backend.DTO.Order.CREATE;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-@Builder
-public record OrderItemResponse(
-        Long orderItemId,
+public record CreateOrderItemRequest(
         Long productId,
         String productName,
-        List<String> productImageUrls,
         Integer quantity,
         BigDecimal basePrice,
         BigDecimal taxRate,
         BigDecimal lineExtraPrice,
         BigDecimal lineTax,
         BigDecimal lineTotalPrice,
-        List<OrderItemAttributeResponse> orderItemAttributeResponseList
-) {
-}
+        List<CreateOrderItemAttributeRequest> orderItemAttributes
+) {}
