@@ -7,6 +7,7 @@ import com.rgiftings.Backend.Service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,8 +32,10 @@ public class OrderController {
         return  new ResponseEntity<>(orderResponseList, HttpStatus.OK);
     }
 
-    @GetMapping("/orders/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/orders")
     public ResponseEntity<List<OrderResponse>> retrieveOrderbyUserId(@RequestHeader("Authorization") String authHeader) throws FirebaseAuthException {
+        System.out.println("Called Admin Orders");
         List<OrderResponse> orderResponseList = orderService.retrieveAllOrders(authHeader);
         return  new ResponseEntity<>(orderResponseList, HttpStatus.OK);
     }

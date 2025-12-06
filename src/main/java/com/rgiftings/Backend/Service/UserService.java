@@ -38,11 +38,40 @@ public class UserService {
                 .phone(userCreateRequest.phone())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .role("USER")
                 .build();
 
         User savedUser = userRepository.save(newUser);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+
+    }
+
+    public ResponseEntity<?> registerAdmin(String authHeader, UserCreateRequest userCreateRequest) throws FirebaseAuthException {
+
+        String idToken = authHeader.replace("Bearer ", "");
+        FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+        String firebaseUid = decodedToken.getUid();
+
+        Optional<User> existingUser = userRepository.findByFirebaseUid(firebaseUid);
+        if(existingUser.isPresent()){
+            return ResponseEntity.ok(existingUser.get());
+        }
+
+        User newUser = User.builder()
+                .firebaseUid(firebaseUid)
+                .name(userCreateRequest.name())
+                .email(userCreateRequest.email())
+                .phone(userCreateRequest.phone())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .role("ADMIN")
+                .build();
+
+        User savedUser = userRepository.save(newUser);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedUser);
+
 
     }
 
@@ -54,5 +83,19 @@ public class UserService {
         Optional<User> existingUser = userRepository.findByFirebaseUid(firebaseUid);
 
         return ResponseEntity.status(HttpStatus.OK).body(existingUser);
+    }
+
+    public ResponseEntity<?> loginAdmin(String authHeader) throws FirebaseAuthException {
+        String idToken = authHeader.replace("Bearer ", "");
+        FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+        String firebaseUid = decodedToken.getUid();
+
+        User admin = userRepository.findByFirebaseUid(firebaseUid)
+                .orElseThrow(() -> new RuntimeException("No Admin found to LOGIN"));
+        if(!"ADMIN".equals(admin.getRole())){
+            throw new RuntimeException("NOT AN ADMIN");
+        }
+
+        return ResponseEntity.status(HttpStatus.OK).body(admin);
     }
 }

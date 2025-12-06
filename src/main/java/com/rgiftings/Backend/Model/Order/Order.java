@@ -1,5 +1,6 @@
 package com.rgiftings.Backend.Model.Order;
 
+import com.rgiftings.Backend.Model.User.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,11 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     private String guestEmail;
     private String guestPhone;
     private Long addressId;

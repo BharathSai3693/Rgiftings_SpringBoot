@@ -24,6 +24,7 @@ public class User {
     private String phone;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private String role;
 
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 //    private Address address;

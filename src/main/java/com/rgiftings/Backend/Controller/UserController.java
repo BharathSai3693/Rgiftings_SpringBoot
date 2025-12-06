@@ -7,6 +7,7 @@ import com.rgiftings.Backend.DTO.User.Create.UserCreateRequest;
 import com.rgiftings.Backend.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,16 +21,31 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestHeader("Authorization") String authHeader,
                                           @RequestBody UserCreateRequest userCreateRequest) throws FirebaseAuthException {
+        ResponseEntity<?> user;
+        user = userService.registerUser(authHeader,userCreateRequest);
+        return user;
+    }
 
-        ResponseEntity<?> user = userService.registerUser(authHeader,userCreateRequest);
+    @PostMapping("/adminregister")
+    public ResponseEntity<?> registerAdmin(@RequestHeader("Authorization") String authHeader,
+                                          @RequestBody UserCreateRequest userCreateRequest) throws FirebaseAuthException {
+        ResponseEntity<?> admin;
+        admin = userService.registerAdmin(authHeader,userCreateRequest);
+        return admin;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestHeader("Authorization") String authHeader) throws FirebaseAuthException {
+        ResponseEntity<?> user;
+        user = userService.loginUser(authHeader);
         return user;
 
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<?> registerUser(@RequestHeader("Authorization") String authHeader) throws FirebaseAuthException {
-
-        ResponseEntity<?> user = userService.loginUser(authHeader);
+    @PostMapping("/adminlogin")
+    public ResponseEntity<?> loginAdmin(@RequestHeader("Authorization") String authHeader) throws FirebaseAuthException {
+        ResponseEntity<?> user;
+        user = userService.loginAdmin(authHeader);
         return user;
 
     }

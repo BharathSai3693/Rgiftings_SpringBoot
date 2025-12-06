@@ -51,15 +51,30 @@ public class OrderService {
     // CREATE/PLACE ORDER
     //Main Order Placing Function
     public String placeOrder(CreateOrderRequest orderRequest) {
-        Order newOrder = Order.builder()
-                .userId(orderRequest.userId())
-                .guestEmail(orderRequest.guestEmail())
-                .guestPhone(orderRequest.guestPhone())
-                .addressId(orderRequest.addressId())
-                .status("PENDING")
-                .orderCreatedAt(LocalDateTime.now())
-                .orderUpdatedAt(LocalDateTime.now())
-                .build();
+        Order newOrder;
+        if(orderRequest.userId()!=null){
+            User user = userRepository.findById(orderRequest.userId()).orElseThrow(() -> new RuntimeException("No User found to place order"));
+            newOrder = Order.builder()
+                    .user(user)
+                    .addressId(orderRequest.addressId())
+                    .status("PENDING")
+                    .orderCreatedAt(LocalDateTime.now())
+                    .orderUpdatedAt(LocalDateTime.now())
+                    .build();
+
+        }
+        else{
+            newOrder = Order.builder()
+                    .guestEmail(orderRequest.guestEmail())
+                    .guestPhone(orderRequest.guestPhone())
+                    .addressId(orderRequest.addressId())
+                    .status("PENDING")
+                    .orderCreatedAt(LocalDateTime.now())
+                    .orderUpdatedAt(LocalDateTime.now())
+                    .build();
+        }
+
+
 
         BigDecimal subTotalAmount =BigDecimal.ZERO;
         BigDecimal taxAmount = BigDecimal.ZERO;
@@ -262,7 +277,7 @@ public class OrderService {
 
             OrderResponse orderResponse = OrderResponse.builder()
                     .orderId(order.getId())
-                    .userId(order.getUserId())
+                    .userId(order.getUser().getId())
                     .guestEmail(order.getGuestEmail())
                     .guestPhone(order.getGuestPhone())
                     .addressId(order.getAddressId())
@@ -282,7 +297,7 @@ public class OrderService {
     }
 
 
-    //Main Order Retrieving by userId function
+    //Main All Order Retrieving by admin
     public List<OrderResponse> retrieveAllOrders(String authHeader) throws FirebaseAuthException {
         // STEP 1: Fetch all orders for the user
         List<Order> orders = orderRepository.findAll();
@@ -359,7 +374,7 @@ public class OrderService {
 
             OrderResponse orderResponse = OrderResponse.builder()
                     .orderId(order.getId())
-                    .userId(order.getUserId())
+                    .userId(order.getUser().getId())
                     .guestEmail(order.getGuestEmail())
                     .guestPhone(order.getGuestPhone())
                     .addressId(order.getAddressId())
